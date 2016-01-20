@@ -1,7 +1,7 @@
 USB Emulation In Python With No Additional Hardware
 =============
 
-Fixes for work with Linux 4.2.
+Hack fixes for work with Linux 4.2.
 
 More details on: <br>
 http://breaking-the-system.blogspot.com/2014/08/emulating-usb-devices-in-python-with-no.html <br>

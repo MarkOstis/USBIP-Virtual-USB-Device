@@ -102,11 +102,17 @@ class USBHID(USBDevice):
             return_val+=chr(val)
         return return_val
 
+    def comp(self,val):
+        if val >= 0: 
+          return val
+        else:
+          return 256+val
+
     def handle_data(self, usb_req):
         # Sending random mouse data
         # Send data only for 5 seconds
-        if (datetime.datetime.now() - self.start_time).seconds < 5:
-            return_val = chr(0x0) + chr(random.randint(1, 10)) + chr(random.randint(1, 10)) + chr(random.randint(1, 10))
+        if (datetime.datetime.now() - self.start_time).seconds < 10:
+            return_val = chr(0x0) + chr(self.comp(random.randint(-1, 1))) + chr(self.comp(random.randint(-1, 1))) + chr(0)
             self.send_usb_req(usb_req, return_val)
 
 
@@ -121,6 +127,7 @@ class USBHID(USBDevice):
             if control_req.bRequest == 0x0a:  # set idle
                 print 'Idle'
                 # Idle
+                self.send_ok(usb_req)
                 pass
 
 
