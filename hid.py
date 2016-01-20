@@ -1,6 +1,11 @@
+import time
 import random
 import datetime
 from USBIP import BaseStucture, USBDevice, InterfaceDescriptor, DeviceConfigurations, EndPoint, USBContainer
+
+
+#data event counter    
+count =0
 
 # Emulating USB mouse
 
@@ -108,12 +113,18 @@ class USBHID(USBDevice):
         else:
           return 256+val
 
+
+
     def handle_data(self, usb_req):
         # Sending random mouse data
         # Send data only for 5 seconds
-        if (datetime.datetime.now() - self.start_time).seconds < 10:
-            return_val = chr(0x0) + chr(self.comp(random.randint(-1, 1))) + chr(self.comp(random.randint(-1, 1))) + chr(0)
+        #if (datetime.datetime.now() - self.start_time).seconds < 10:
+         global count
+         if count < 100:
+            return_val = chr(0x0) + chr(self.comp(random.randint(-5, 5))) + chr(self.comp(random.randint(-5, 5))) + chr(0)
             self.send_usb_req(usb_req, return_val)
+            time.sleep(0.05)
+         count=count+1
 
 
     def handle_unknown_control(self, control_req, usb_req):
