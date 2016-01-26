@@ -5,13 +5,13 @@ Hack fixes for mouse hid work with Linux 4.2 (and Windows 10)
 
 keyboard hid added.
 
-in Linux use:
-  python hid-xxxx.py
-  and
-  usbip attach -r 127.0.0.1 -b 1-1
-  (remember to load kernel modules ubip-core and vhci-hcd)   
+in Linux use:<br>
+  python hid-xxxx.py<br>
+  and<br>
+  usbip attach -r 127.0.0.1 -b 1-1<br>
+  (remember to load kernel modules usbip-core and vhci-hcd)<br>   
 
-for list device use:
+for list device use:<br>
   usbip list -r 127.0.0.1 
 
 More details on: <br>
