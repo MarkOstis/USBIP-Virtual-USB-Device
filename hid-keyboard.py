@@ -131,7 +131,7 @@ class USBHID(USBDevice):
                return_val = "\x00\x00" + str(chr(random.randint(4,29))) + "\x00\x00\x00\x00\x00"
             else: 
                return_val = "\x00\x00\x00\x00\x00\x00\x00\x00" 
-            self.send_usb_req(usb_req, return_val)
+            self.send_usb_req(usb_req, return_val, len(return_val))
          time.sleep(0.05)
          count=count+1
 
@@ -141,19 +141,20 @@ class USBHID(USBDevice):
             if control_req.bRequest == 0x6:  # Get Descriptor
                 if control_req.wValue == 0x22:  # send initial report
                     print 'send initial report'
-                    self.send_usb_req(usb_req, self.generate_keyboard_report())
+                    ret=self.generate_keyboard_report()
+                    self.send_usb_req(usb_req, ret, len(ret))
 
         if control_req.bmRequestType == 0x21:  # Host Request
             if control_req.bRequest == 0x0a:  # set idle
                 print 'Idle'
                 # Idle
-                self.send_ok(usb_req)
+                self.send_usb_req(usb_req, '', 0,0)
                 pass
             if control_req.bRequest == 0x09:  # set report
                 print 'set report'
                 data = usb_container.usb_devices[0].connection.recv(control_req.wLength)
                 #use data ? 
-                self.send_ok(usb_req)
+                self.send_usb_req(usb_req, '', 0,0)
                 pass
 
 
