@@ -39,7 +39,7 @@ interface_d = InterfaceDescriptor(bAlternateSetting=0,
 
 end_point = EndPoint(bEndpointAddress=0x81,
                      bmAttributes=0x3,
-                     wMaxPacketSize=8000,  # Little endian
+                     wMaxPacketSize=0x0800,  # Little endian
                      bInterval=0xFF)  # interval to report
 
 

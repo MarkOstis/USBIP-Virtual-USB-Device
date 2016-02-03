@@ -1,4 +1,4 @@
-USB Emulation In Python With No Additional Hardware
+USBIP hardware emulation 
 =============
 
 Hack fixes for mouse hid work with Linux 4.2 (and Windows 10)
@@ -6,8 +6,10 @@ Hack fixes for mouse hid work with Linux 4.2 (and Windows 10)
 keyboard hid added.
 
 in Linux use:<br>
-  python hid-xxxx.py<br>
-  and<br>
+  python hid-xxxx.py for python version<br>
+or<br>
+  ./hid-xxxx for c version<br>
+and<br>
   usbip attach -r 127.0.0.1 -b 1-1<br>
   (remember to load kernel modules usbip-core and vhci-hcd)<br>   
 
