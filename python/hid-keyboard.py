@@ -23,7 +23,7 @@ class HIDClass(BaseStucture):
     ]
 
 
-hid_class = HIDClass(bcdHID=0x0100,  # Mouse
+hid_class = HIDClass(bcdHID=0x0100,  # keyboard
                      bCountryCode=0x0,
                      bNumDescriptors=0x1,
                      bDescriptprType2=0x22,  # Report
@@ -39,7 +39,7 @@ interface_d = InterfaceDescriptor(bAlternateSetting=0,
 
 end_point = EndPoint(bEndpointAddress=0x81,
                      bmAttributes=0x3,
-                     wMaxPacketSize=8000,  # Little endian
+                     wMaxPacketSize=0x8000,  # Little endian
                      bInterval=0xFF)  # interval to report
 
 
@@ -121,7 +121,7 @@ class USBHID(USBDevice):
 
 
     def handle_data(self, usb_req):
-        # Sending random mouse data
+        # Sending random keyboard data
         # Send data only for 5 seconds
         #if (datetime.datetime.now() - self.start_time).seconds < 10:
 	 print "handle data"

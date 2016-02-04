@@ -1,12 +1,16 @@
 CC=i686-w64-mingw32-gcc
 CFLAGS= -Wall -O5 -Wno-overflow
-PROGS= hid-mouse
+PROGS= hid-mouse hid-keyboard
 
 all:	${PROGS}
 
 hid-mouse:	usbip.c hid-mouse.c 
 		${CC} ${CFLAGS} usbip.c -c 
 		${CC} ${CFLAGS} usbip.o hid-mouse.c -o hid-mouse.exe -lws2_32 
+
+hid-keyboard:	usbip.c hid-keyboard.c 
+		${CC} ${CFLAGS} usbip.c -c 
+		${CC} ${CFLAGS} usbip.o hid-keyboard.c -o hid-keyboard.exe -lws2_32 
 
 clean:
 		rm -f ${PROGS} core core.* *.o temp.* *.out typescript* *.exe

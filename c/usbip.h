@@ -23,6 +23,28 @@
    For e-mail suggestions :  lcgamboa@yahoo.com
    ######################################################################## */
 
+#ifdef LINUX
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<sys/un.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+#define        min(a,b)        ((a) < (b) ? (a) : (b))
+#else
+#include<winsock.h>
+#endif
+//system headers independent
+#include<errno.h>
+#include<stdarg.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
+//defines
+#define        TCP_SERV_PORT        3240
+typedef struct sockaddr sockaddr;
+
+
 //USB definitions
 
 #define byte unsigned char
@@ -106,6 +128,26 @@ typedef struct __attribute__ ((packed)) _USB_DEVICE_QUALIFIER_DESCRIPTOR
     byte bReserved;             // Always zero (0)
 } USB_DEVICE_QUALIFIER_DESCRIPTOR;
 
+//HID
+typedef struct __attribute__ ((packed)) _USB_HID_DESCRIPTOR
+{
+    byte bLength;
+    byte bDescriptorType;
+    word bcdHID;
+    byte bCountryCode;
+    byte bNumDescriptors;
+    byte bRPDescriptorType;
+    word wRPDescriptorLength;
+} USB_HID_DESCRIPTOR;
+
+//Configuration
+typedef struct __attribute__ ((packed)) _CONFIG
+{
+ USB_CONFIGURATION_DESCRIPTOR dev_conf;
+ USB_INTERFACE_DESCRIPTOR dev_int;
+ USB_HID_DESCRIPTOR dev_hid;
+ USB_ENDPOINT_DESCRIPTOR dev_ep;
+} CONFIG;
 
 //=================================================================================
 //USBIP data struct 
@@ -279,7 +321,6 @@ void usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc);
 
 //implemented by user
 extern const USB_DEVICE_DESCRIPTOR dev_dsc;
-extern const byte configuration[];
-extern int conf_total_size;
+extern const CONFIG configuration;
 void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req);
 void handle_unknown_control(int sockfd, StandardDeviceRequest * control_req, USBIP_RET_SUBMIT *usb_req);

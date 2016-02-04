@@ -1,4 +1,4 @@
-USBIP hardware emulation 
+USBIP hardware emulation (Virtual USB device) 
 =============
 
 Hack fixes for mouse hid work with Linux 4.2 (and Windows 10)

@@ -26,31 +26,12 @@
 //system headers dependent
 
 
-#ifdef LINUX
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<sys/un.h>
-#include<netinet/in.h>
-#include<arpa/inet.h>
-#define        min(a,b)        ((a) < (b) ? (a) : (b))
-#else
-#include<winsock.h>
+#include"usbip.h"
+
+#ifndef LINUX
 WORD wVersionRequested = 2;
 WSADATA wsaData;
 #endif
-//system headers independent
-#include<errno.h>
-#include<stdarg.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<unistd.h>
-//defines
-#define        TCP_SERV_PORT        3240
-typedef struct sockaddr sockaddr;
-
-#include"usbip.h"
-
 
 void handle_device_list(const USB_DEVICE_DESCRIPTOR *dev_dsc, OP_REP_DEVLIST *list)
 {
@@ -71,13 +52,12 @@ void handle_device_list(const USB_DEVICE_DESCRIPTOR *dev_dsc, OP_REP_DEVLIST *li
   list->bDeviceClass=dev_dsc->bDeviceClass;
   list->bDeviceSubClass=dev_dsc->bDeviceSubClass;
   list->bDeviceProtocol=dev_dsc->bDeviceProtocol;
-  list->bConfigurationValue=1;//FIXME
+  list->bConfigurationValue=configuration.dev_conf.bConfigurationValue;
   list->bNumConfigurations=dev_dsc->bNumConfigurations; 
-  list->bNumInterfaces=1;//FIXME
-//==================//FIXME read values from configuration
-  list->bInterfaceClass=0x03;
-  list->bInterfaceSubClass=0x01;
-  list->bInterfaceProtocol=0x02;
+  list->bNumInterfaces=configuration.dev_conf.bNumInterfaces;
+  list->bInterfaceClass=configuration.dev_int.bInterfaceClass;
+  list->bInterfaceSubClass=configuration.dev_int.bInterfaceSubClass;
+  list->bInterfaceProtocol=configuration.dev_int.bInterfaceProtocol;
   list->padding=0;
 };
 
@@ -100,8 +80,8 @@ void handle_attach(const USB_DEVICE_DESCRIPTOR *dev_dsc, OP_REP_IMPORT *rep)
   rep->bDeviceSubClass=dev_dsc->bDeviceSubClass;
   rep->bDeviceProtocol=dev_dsc->bDeviceProtocol;
   rep->bNumConfigurations=dev_dsc->bNumConfigurations; 
-  rep->bConfigurationValue=1; //FIXME
-  rep->bNumInterfaces=1;//FIXME
+  rep->bConfigurationValue=configuration.dev_conf.bConfigurationValue;
+  rep->bNumInterfaces=configuration.dev_conf.bNumInterfaces;
 }
 
 void pack(int * data, int size)
@@ -171,7 +151,7 @@ int handle_get_descriptor(int sockfd, StandardDeviceRequest * control_req, USBIP
    if(control_req->wValue == 0x2) // configuration
    {
      handled = 1;
-     send_usb_req(sockfd,usb_req, (char *)configuration, control_req->wLength ,0);
+     send_usb_req(sockfd,usb_req, (char *) &configuration, control_req->wLength ,0);
    }
    if(control_req->wValue == 0xA) // config status ???
    {
