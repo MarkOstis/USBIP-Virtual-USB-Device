@@ -49,7 +49,7 @@ const USB_DEVICE_DESCRIPTOR dev_dsc=
 };
 
 /* Configuration 1 Descriptor */
-const CONFIG  configuration={{
+const CONFIG_HID  configuration_hid={{
     /* Configuration Descriptor */
     0x09,//sizeof(USB_CFG_DSC),    // Size of this descriptor in bytes
     USB_DESCRIPTOR_CONFIGURATION,                // CONFIGURATION descriptor type
@@ -89,7 +89,11 @@ const CONFIG  configuration={{
     0x0A                        //Interval
 }};
 
-int conf_total_size=9+9+9+7;
+const char *configuration = (const char *)&configuration_hid; 
+const USB_INTERFACE_DESCRIPTOR *interfaces[]={ &configuration_hid.dev_int };
+const unsigned char *strings[]={};
+const USB_DEVICE_QUALIFIER_DESCRIPTOR  dev_qua={};
+
 
 //Class specific descriptor - HID keyboard
 const byte keyboard_report[0x3F]={
@@ -151,7 +155,7 @@ void handle_unknown_control(int sockfd, StandardDeviceRequest * control_req, USB
         { 
           if(control_req->bRequest == 0x6)  //# Get Descriptor
           {
-            if(control_req->wValue == 0x22)  // send initial report
+            if(control_req->wValue1 == 0x22)  // send initial report
             {
               printf("send initial report\n");
               send_usb_req(sockfd,usb_req,(char *) keyboard_report, 0x3F, 0);

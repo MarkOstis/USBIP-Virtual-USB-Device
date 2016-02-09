@@ -128,6 +128,13 @@ typedef struct __attribute__ ((packed)) _USB_DEVICE_QUALIFIER_DESCRIPTOR
     byte bReserved;             // Always zero (0)
 } USB_DEVICE_QUALIFIER_DESCRIPTOR;
 
+//Generic Configuration
+typedef struct __attribute__ ((packed)) _CONFIG_GEN
+{
+ USB_CONFIGURATION_DESCRIPTOR dev_conf;
+ USB_INTERFACE_DESCRIPTOR dev_int;
+} CONFIG_GEN;
+
 //HID
 typedef struct __attribute__ ((packed)) _USB_HID_DESCRIPTOR
 {
@@ -147,7 +154,63 @@ typedef struct __attribute__ ((packed)) _CONFIG
  USB_INTERFACE_DESCRIPTOR dev_int;
  USB_HID_DESCRIPTOR dev_hid;
  USB_ENDPOINT_DESCRIPTOR dev_ep;
-} CONFIG;
+} CONFIG_HID;
+
+//CDC
+/* Functional Descriptor Structure - See CDC Specification 1.1 for details */
+
+/* Header Functional Descriptor */
+typedef struct __attribute__ ((packed)) _USB_CDC_HEADER_FN_DSC
+{
+    byte bFNLength;
+    byte bDscType;
+    byte bDscSubType;
+    word bcdCDC;
+} USB_CDC_HEADER_FN_DSC;
+
+/* Abstract Control Management Functional Descriptor */
+typedef struct __attribute__ ((packed)) _USB_CDC_ACM_FN_DSC
+{
+    byte bFNLength;
+    byte bDscType;
+    byte bDscSubType;
+    byte bmCapabilities;
+} USB_CDC_ACM_FN_DSC;
+
+/* Union Functional Descriptor */
+typedef struct __attribute__ ((packed)) _USB_CDC_UNION_FN_DSC
+{
+    byte bFNLength;
+    byte bDscType;
+    byte bDscSubType;
+    byte bMasterIntf;
+    byte bSaveIntf0;
+} USB_CDC_UNION_FN_DSC;
+
+/* Call Management Functional Descriptor */
+typedef struct __attribute__ ((packed)) _USB_CDC_CALL_MGT_FN_DSC
+{
+    byte bFNLength;
+    byte bDscType;
+    byte bDscSubType;
+    byte bmCapabilities;
+    byte bDataInterface;
+} USB_CDC_CALL_MGT_FN_DSC;
+
+//Configuration
+typedef struct __attribute__ ((packed)) _CONFIG_CDC
+{
+ USB_CONFIGURATION_DESCRIPTOR dev_conf0;
+ USB_INTERFACE_DESCRIPTOR dev_int0;
+ USB_CDC_HEADER_FN_DSC cdc_header;
+ USB_CDC_CALL_MGT_FN_DSC cdc_call_mgt;
+ USB_CDC_ACM_FN_DSC cdc_acm;
+ USB_CDC_UNION_FN_DSC cdc_union;
+ USB_ENDPOINT_DESCRIPTOR dev_ep0;
+ USB_INTERFACE_DESCRIPTOR dev_int1;
+ USB_ENDPOINT_DESCRIPTOR dev_ep1;
+ USB_ENDPOINT_DESCRIPTOR dev_ep2;
+} CONFIG_CDC;
 
 //=================================================================================
 //USBIP data struct 
@@ -160,13 +223,17 @@ typedef struct  __attribute__ ((packed)) _OP_REQ_DEVLIST
 } OP_REQ_DEVLIST;
 
 
-typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST
+typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST_HEADER
 {
 word version;
 word command;
 int status;
 int nExportedDevice;
-//=================
+}OP_REP_DEVLIST_HEADER;
+
+//================= for each device
+typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST_DEVICE
+{
 char usbPath[256];
 char busID[32];
 int busnum;
@@ -181,11 +248,22 @@ byte bDeviceProtocol;
 byte bConfigurationValue;
 byte bNumConfigurations; 
 byte bNumInterfaces;
-//==================
+}OP_REP_DEVLIST_DEVICE;
+
+//================== for each interface
+typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST_INTERFACE
+{
 byte bInterfaceClass;
 byte bInterfaceSubClass;
 byte bInterfaceProtocol;
 byte padding;
+}OP_REP_DEVLIST_INTERFACE;
+
+typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST
+{
+OP_REP_DEVLIST_HEADER      header;
+OP_REP_DEVLIST_DEVICE      device; //only one!
+OP_REP_DEVLIST_INTERFACE   *interfaces;
 }OP_REP_DEVLIST;
 
 typedef struct  __attribute__ ((packed)) _OP_REQ_IMPORT
@@ -202,7 +280,7 @@ typedef struct  __attribute__ ((packed)) _OP_REP_IMPORT
 word version;
 word command;
 int  status;
-//-------------
+//------------- if not ok, finish here
 char usbPath[256];
 char busID[32];
 int busnum;
@@ -265,53 +343,37 @@ long long setup;
 }USBIP_RET_SUBMIT;
 
 
-/*
-+USBIP_CMD_UNLINK: Unlink an URB
-+
-+ Offset    | Length | Value      | Meaning
-+-----------+--------+------------+---------------------------------------------------
-+ 0         | 4      | 0x00000003 | command: URB unlink command
-+-----------+--------+------------+---------------------------------------------------
-+ 4         | 4      |            | seqnum: URB sequence number to unlink: FIXME: is this so?
-+-----------+--------+------------+---------------------------------------------------
-+ 8         | 4      |            | devid
-+-----------+--------+------------+---------------------------------------------------
-+ 0xC       | 4      |            | direction: 0: USBIP_DIR_IN
-+           |        |            |            1: USBIP_DIR_OUT
-+-----------+--------+------------+---------------------------------------------------
-+ 0x10      | 4      |            | ep: endpoint number: zero
-+-----------+--------+------------+---------------------------------------------------
-+ 0x14      | 4      |            | seqnum: the URB sequence number given previously
-+           |        |            |   at USBIP_CMD_SUBMIT.seqnum field
-+
-+USBIP_RET_UNLINK: Reply for URB unlink
-+
-+ Offset    | Length | Value      | Meaning
-+-----------+--------+------------+---------------------------------------------------
-+ 0         | 4      | 0x00000004 | command: reply for the URB unlink command
-+-----------+--------+------------+---------------------------------------------------
-+ 4         | 4      |            | seqnum: the unlinked URB sequence number
-+-----------+--------+------------+---------------------------------------------------
-+ 8         | 4      |            | devid
-+-----------+--------+------------+---------------------------------------------------
-+ 0xC       | 4      |            | direction: 0: USBIP_DIR_IN
-+           |        |            |            1: USBIP_DIR_OUT
-+-----------+--------+------------+---------------------------------------------------
-+ 0x10      | 4      |            | ep: endpoint number
-+-----------+--------+------------+---------------------------------------------------
-+ 0x14      | 4      |            | status: This is the value contained in the
-+           |        |            |   urb->status in the URB completition handler.
-+           |        |            |   FIXME: a better explanation needed.
+typedef struct  __attribute__ ((packed)) _USBIP_CMD_UNLINK
+{
+int command;
+int seqnum;
+int devid;
+int direction;
+int ep;
+int seqnum_urb;
+}USBIP_CMD_UNLINK;
 
 
-*/
+typedef struct  __attribute__ ((packed)) _USBIP_RET_UNLINK
+{
+int command;
+int seqnum;
+int devid;
+int direction;
+int ep;
+int status;
+}USBIP_RET_UNLINK;
+
+
 
 typedef struct  __attribute__ ((packed)) _StandardDeviceRequest
 {
   byte bmRequestType;
   byte bRequest;
-  word wValue;
-  word wIndex;
+  byte wValue0;
+  byte wValue1;
+  byte wIndex0;
+  byte wIndex1;
   word wLength;
 }StandardDeviceRequest;
 
@@ -321,6 +383,10 @@ void usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc);
 
 //implemented by user
 extern const USB_DEVICE_DESCRIPTOR dev_dsc;
-extern const CONFIG configuration;
+extern const USB_DEVICE_QUALIFIER_DESCRIPTOR  dev_qua;
+extern const char * configuration;
+extern const USB_INTERFACE_DESCRIPTOR *interfaces[];
+extern const unsigned char *strings[];
+
 void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req);
 void handle_unknown_control(int sockfd, StandardDeviceRequest * control_req, USBIP_RET_SUBMIT *usb_req);

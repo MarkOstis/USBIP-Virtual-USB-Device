@@ -49,7 +49,7 @@ const USB_DEVICE_DESCRIPTOR dev_dsc=
 
 
 /* Configuration 1 Descriptor */
-const CONFIG configuration={
+const CONFIG_HID configuration_hid={
 {
     /* Configuration Descriptor */
     0x09,//sizeof(USB_CFG_DSC),    // Size of this descriptor in bytes
@@ -90,9 +90,10 @@ const CONFIG configuration={
     0x0A                    //Interval
 }};
 
-
- 
-
+const char *configuration = (const char *) &configuration_hid; 
+const USB_INTERFACE_DESCRIPTOR *interfaces[]={ &configuration_hid.dev_int };
+const unsigned char *strings[]={};
+const USB_DEVICE_QUALIFIER_DESCRIPTOR  dev_qua={};
 
 //Class specific descriptor - HID mouse
 const byte mouse_report[0x34]={
@@ -148,7 +149,7 @@ void handle_unknown_control(int sockfd, StandardDeviceRequest * control_req, USB
         { 
           if(control_req->bRequest == 0x6)  //# Get Descriptor
           {
-            if(control_req->wValue == 0x22)  // send initial report
+            if(control_req->wValue1 == 0x22)  // send initial report
             {
               printf("send initial report\n");
               send_usb_req(sockfd,usb_req,(char *) mouse_report, 0x34, 0);
