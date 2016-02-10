@@ -43,7 +43,7 @@ const USB_DEVICE_DESCRIPTOR dev_dsc=
     0x000A,                 // Product ID
     0x0100,                 // Device release number in BCD format
     0x01,                   // Manufacturer string index
-    0x00,                   // Product string index
+    0x03,                   // Product string index
     0x00,                   // Device serial number string index
     0x01                    // Number of possible configurations
 };
@@ -102,7 +102,7 @@ const CONFIG_CDC  configuration_cdc={{
     0x04,                   // bFNLength
     0x24,                   // bDscType
     0x02,                   // bDscSubType 
-    0x02                    // bmCapabilities
+    0x02                    // bmCapabilities 
     },{
     /* Union Functional Descriptor */    
     0x05,                   // bFNLength
@@ -176,15 +176,33 @@ const unsigned char string_2[] = { //
 		'C', 0x00, //
 		};
 
+const unsigned char string_3[] = { //
+		0x18, 
+                USB_DESCRIPTOR_STRING, //
+		'V', 0x00, //
+		'i', 0x00, //
+		'r', 0x00, //
+		't', 0x00, //
+		'u', 0x00, //
+		'a', 0x00, //
+		'l', 0x00, //
+		' ', 0x00, //
+                'U', 0x00, //
+                'S', 0x00, //
+                'B', 0x00, //
+		};
+
 
 const char *configuration = (const char *)&configuration_cdc; 
 
 const USB_INTERFACE_DESCRIPTOR *interfaces[]={ &configuration_cdc.dev_int0, &configuration_cdc.dev_int1};
 
-const unsigned char *strings[]={string_0, string_1, string_2};
+const unsigned char *strings[]={string_0, string_1, string_2, string_3};
 
 
-char return_val='0';
+#define BSIZE 1 
+char buffer[BSIZE+1];
+int  bsize=0;
 
 
 void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req)
@@ -192,35 +210,32 @@ void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req)
     
   if(usb_req->ep == 0x01)
   {  
-    //send_usb_req(sockfd, usb_req, "", 0, 1);
-    printf("EP1 received \n"); //FIXME!!!!
+    send_usb_req(sockfd, usb_req, "", 0, 0);
+    printf("EP1 received \n"); 
     //usleep(50000);
   }
   
-  if(usb_req->ep == 0x02)
+  if((usb_req->ep == 0x02))
   {
     if(usb_req->direction == 0) //input
     { 
-      if ((recv (sockfd, (char *) &return_val , 1, 0)) != 1)
-      {
-        printf ("receive error : %s \n", strerror (errno));
-        exit(-1);
-      };  
+      bsize=recv (sockfd, (char *) buffer , BSIZE, 0);
       send_usb_req(sockfd, usb_req,"", 0, 0);
-      printf("received (%c)\n",return_val);    
+      buffer[bsize+1]=0; //string terminator
+      printf("received (%s)\n",buffer);    
     }
     else //output
     {
-      if(return_val != 0)
+      if(bsize != 0)
       {    
-        send_usb_req(sockfd, usb_req, &return_val, 1, 0);    
-        printf("sending (%c)\n",return_val);
-        return_val=0;
+        send_usb_req(sockfd, usb_req, buffer, bsize, 0);    
+        printf("sending (%s)\n",buffer);
+        bsize=0;
       }
       else
         send_usb_req(sockfd, usb_req,"", 0, 0);    
         printf("no data \n");
-      usleep(50000);
+      //usleep(50000);
     }
   }
   
@@ -236,8 +251,10 @@ typedef struct _LINE_CODING
 }LINE_CODING;
 
 
+
 LINE_CODING linec;
 
+unsigned short linecs=0;
 
 void handle_unknown_control(int sockfd, StandardDeviceRequest * control_req, USBIP_RET_SUBMIT *usb_req)
 {
@@ -260,7 +277,8 @@ void handle_unknown_control(int sockfd, StandardDeviceRequest * control_req, USB
           }
           if(control_req->bRequest == 0x22)  //SET_LINE_CONTROL_STATE
           {
-            printf("SET_LINE_CONTROL_STATE\n");   
+            linecs=control_req->wValue0;
+            printf("SET_LINE_CONTROL_STATE 0x%02X\n", linecs);   
             send_usb_req(sockfd,usb_req,"",0,0);
           }
           if(control_req->bRequest == 0x23)  //SEND_BREAK

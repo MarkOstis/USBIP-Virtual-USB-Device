@@ -228,7 +228,7 @@ void handle_usb_control(int sockfd, USBIP_RET_SUBMIT *usb_req)
           if(control_req.bRequest == 0x00) // Get STATUS
           {
             char data[2];
-            data[0]=0x02;
+            data[0]=0x01;
             data[1]=0x00;
             send_usb_req(sockfd,usb_req, data, 2 , 0);        
             handled = 1;
@@ -412,8 +412,7 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
              if(cmd.command == 1)
                handle_usb_request(sockfd, &usb_req);
              
-             //FIXME
-             /*
+
              if(cmd.command == 2) //unlink urb
              {
                 USBIP_RET_UNLINK ret;  
@@ -424,14 +423,15 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
                 ret.ep=htonl(cmd.ep);
                 ret.seqnum=htonl(cmd.seqnum);
                 ret.status=htonl(0); 
-                
+             //FIXME
+             /*                
                 if (send (sockfd, (char *)&ret, sizeof(USBIP_RET_UNLINK), 0) != sizeof(USBIP_RET_UNLINK))
                 {
                   printf ("send error : %s \n", strerror (errno));
                   exit(-1);
                 };
-             }
-             */ 
+             */
+             } 
           } 
        }
        close (sockfd);
