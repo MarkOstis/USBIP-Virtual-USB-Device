@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS= -Wall -O5 -DLINUX -Wno-overflow
-PROGS= hid-mouse hid-keyboard cdc
+CFLAGS= -Wall -O2 -DLINUX -Wno-overflow
+PROGS= hid-mouse hid-keyboard cdc-acm
 
 all:	${PROGS}
 
@@ -12,8 +12,8 @@ hid-keyboard:	usbip.c hid-keyboard.c
 		${CC} ${CFLAGS} usbip.c -c 
 		${CC} ${CFLAGS} usbip.o hid-keyboard.c -o hid-keyboard
 	
-cdc:	usbip.c cdc.c 
+cdc-acm:	usbip.c cdc-acm.c 
 		${CC} ${CFLAGS} usbip.c -c 
-		${CC} ${CFLAGS} usbip.o cdc.c -o cdc
+		${CC} ${CFLAGS} usbip.o cdc-acm.c -o cdc-acm
 clean:
 		rm -f ${PROGS} core core.* *.o temp.* *.out typescript*

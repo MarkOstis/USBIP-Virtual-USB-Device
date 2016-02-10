@@ -156,7 +156,7 @@ int handle_get_descriptor(int sockfd, StandardDeviceRequest * control_req, USBIP
   {
     printf("Device\n");  
     handled = 1;
-    send_usb_req(sockfd,usb_req, (char *)&dev_dsc, control_req->wLength, 0);
+    send_usb_req(sockfd,usb_req, (char *)&dev_dsc, sizeof(USB_DEVICE_DESCRIPTOR)/*control_req->wLength*/, 0);
    } 
    if(control_req->wValue1 == 0x2) // configuration
    {
@@ -199,7 +199,8 @@ int handle_set_configuration(int sockfd, StandardDeviceRequest * control_req, US
   return handled;
 }
 
-    
+//http://www.usbmadesimple.co.uk/ums_4.htm
+
 void handle_usb_control(int sockfd, USBIP_RET_SUBMIT *usb_req)
 {
         int handled = 0;
@@ -217,6 +218,7 @@ void handle_usb_control(int sockfd, USBIP_RET_SUBMIT *usb_req)
         printf("  UC Value  %u[%u]\n",control_req.wValue1,control_req.wValue0);
         printf("  UCIndex  %u-%u\n",control_req.wIndex1,control_req.wIndex0);
         printf("  UC Length %u\n",control_req.wLength);
+        
         if(control_req.bmRequestType == 0x80) // Host Request
         {
           if(control_req.bRequest == 0x06) // Get Descriptor
@@ -239,6 +241,15 @@ void handle_usb_control(int sockfd, USBIP_RET_SUBMIT *usb_req)
                 handled = handle_set_configuration(sockfd, &control_req, usb_req);
             }
         }  
+        if(control_req.bmRequestType == 0x01)
+        { 
+          if(control_req.bRequest == 0x0B) //SET_INTERFACE  
+          {
+            printf("SET_INTERFACE\n");   
+            send_usb_req(sockfd,usb_req,"",0,1);
+            handled=1; 
+          } 
+        }
         if(! handled)
             handle_unknown_control(sockfd, &control_req, usb_req);
 }
@@ -400,6 +411,9 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
              
              if(cmd.command == 1)
                handle_usb_request(sockfd, &usb_req);
+             
+             //FIXME
+             /*
              if(cmd.command == 2) //unlink urb
              {
                 USBIP_RET_UNLINK ret;  
@@ -410,15 +424,14 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
                 ret.ep=htonl(cmd.ep);
                 ret.seqnum=htonl(cmd.seqnum);
                 ret.status=htonl(0); 
-                //FIXME
-                /*
+                
                 if (send (sockfd, (char *)&ret, sizeof(USBIP_RET_UNLINK), 0) != sizeof(USBIP_RET_UNLINK))
                 {
                   printf ("send error : %s \n", strerror (errno));
                   exit(-1);
                 };
-                */
              }
+             */ 
           } 
        }
        close (sockfd);

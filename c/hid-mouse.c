@@ -40,7 +40,7 @@ const USB_DEVICE_DESCRIPTOR dev_dsc=
     0x08,                   // Max packet size for EP0, see usb_config.h
     0x2706,                 // Vendor ID
     0x0000,                 // Product ID: Mouse in a circle fw demo
-    0x00,                   // Device release number in BCD format
+    0x0000,                 // Device release number in BCD format
     0x00,                   // Manufacturer string index
     0x00,                   // Product string index
     0x00,                   // Device serial number string index
