@@ -227,7 +227,11 @@ void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req)
     else //output
     {
       if(bsize != 0)
-      {    
+      {   
+        int i;
+        for(i=0;i<bsize;i++)//increment received char
+           buffer[i]+=1;
+
         send_usb_req(sockfd, usb_req, buffer, bsize, 0);    
         printf("sending (%s)\n",buffer);
         bsize=0;

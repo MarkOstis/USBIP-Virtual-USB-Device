@@ -34,14 +34,14 @@ const USB_DEVICE_DESCRIPTOR dev_dsc=
 {
     0x12,                   // Size of this descriptor in bytes
     0x01,                   // DEVICE descriptor type
-    0x0000,                 // USB Spec Release Number in BCD format
+    0x0110,                 // USB Spec Release Number in BCD format
     0x00,                   // Class Code
     0x00,                   // Subclass code
     0x00,                   // Protocol code
     0x08,                   // Max packet size for EP0, see usb_config.h
     0x2706,                 // Vendor ID
-    0x0010,                 // Product ID: Mouse in a circle fw demo
-    0x00,                   // Device release number in BCD format
+    0x0100,                 // Product ID: Mouse in a circle fw demo
+    0x0000,                 // Device release number in BCD format
     0x00,                   // Manufacturer string index
     0x00,                   // Product string index
     0x00,                   // Device serial number string index
@@ -86,7 +86,7 @@ const CONFIG_HID  configuration_hid={{
     0x81,            //EndpointAddress
     0x03,                       //Attributes
     0x0008,                  //size
-    0x0A                        //Interval
+    0xFF                        //Interval
 }};
 
 const char *configuration = (const char *)&configuration_hid; 

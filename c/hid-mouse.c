@@ -33,7 +33,7 @@ const USB_DEVICE_DESCRIPTOR dev_dsc=
 {
     0x12,                   // Size of this descriptor in bytes
     0x01,                   // DEVICE descriptor type
-    0x0000,                 // USB Spec Release Number in BCD format
+    0x0110,                 // USB Spec Release Number in BCD format
     0x00,                   // Class Code
     0x00,                   // Subclass code
     0x00,                   // Protocol code
@@ -87,7 +87,7 @@ const CONFIG_HID configuration_hid={
     0x81,                   //EndpointAddress
     0x03,                   //Attributes
     0x0008,                 //size
-    0x0A                    //Interval
+    0xFF                    //Interval
 }};
 
 const char *configuration = (const char *) &configuration_hid; 
@@ -116,11 +116,12 @@ const byte mouse_report[0x34]={
     0x05, 0x01, /*      Usage Page (Generic Desktop)        */
     0x09, 0x30, /*      Usage (X)                           */
     0x09, 0x31, /*      Usage (Y)                           */
-    0x15, 0x81, /*      Logical Minimum (-127)              */
-    0x25, 0x7F, /*      Logical Maximum (127)               */
-    0x75, 0x08, /*      Report Size (8)                     */
-    0x95, 0x03, /*      Report Count (3)                    */
-    0x81, 0x06, /*      Input (Data, Variable, Relative)    */
+    0x09, 0x38, /*      Logical Minimum (-127)              */
+    0x15, 0x81, /*      Logical Maximum (127)               */
+    0x25, 0x7F, /*      Report Size (8)                     */
+    0x75, 0x08, /*      Report Count (3)                    */
+    0x95, 0x03, /*      Input (Data, Variable, Relative)    */
+    0x81, 0x06,
     0xC0, 0xC0};
 
 
