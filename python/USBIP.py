@@ -343,7 +343,7 @@ class USBDevice():
             if control_req.bRequest == 0x06: # Get Descriptor
                 handled = self.handle_get_descriptor(control_req, usb_req)
             if control_req.bRequest == 0x00: # Get STATUS
-                self.send_usb_req(usb_req, "\x02\x00", 2);
+                self.send_usb_req(usb_req, "\x01\x00", 2);
                 handled = True
 
         if control_req.bmRequestType == 0x00: # Host Request
