@@ -234,7 +234,11 @@ void handle_usb_control(int sockfd, USBIP_RET_SUBMIT *usb_req)
 {
         int handled = 0;
         StandardDeviceRequest control_req;
+#ifdef LINUX
         printf("%016llX\n",usb_req->setup); 
+#else
+        printf("%016I64X\n",usb_req->setup); 
+#endif
         control_req.bmRequestType=  (usb_req->setup & 0xFF00000000000000)>>56;  
         control_req.bRequest=       (usb_req->setup & 0x00FF000000000000)>>48;  
         control_req.wValue0=        (usb_req->setup & 0x0000FF0000000000)>>40;  
@@ -298,8 +302,11 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
 {
   struct sockaddr_in serv, cli;
   int listenfd, sockfd, nb;
+#ifdef LINUX
   unsigned int clilen;
-
+#else
+  int clilen;
+#endif
   unsigned char attached;
 
 
@@ -435,7 +442,11 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
              printf("usbip flags %u\n",cmd.transfer_flags);
              printf("usbip number of packets %u\n",cmd.number_of_packets);
              printf("usbip interval %u\n",cmd.interval);
+#ifdef LINUX
              printf("usbip setup %llu\n",cmd.setup);
+#else
+             printf("usbip setup %I64u\n",cmd.setup);
+#endif
              printf("usbip buffer lenght  %u\n",cmd.transfer_buffer_length);
              usb_req.command=0;
              usb_req.seqnum=cmd.seqnum;
@@ -455,6 +466,9 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
 
              if(cmd.command == 2) //unlink urb
              {
+                printf("####################### Unlink URB %u  (not working!!!)\n",cmd.transfer_flags);
+             //FIXME
+             /*                
                 USBIP_RET_UNLINK ret;  
                 printf("####################### Unlink URB %u\n",cmd.transfer_flags);
                 ret.command=htonl(0x04);
@@ -462,9 +476,8 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
                 ret.direction=htonl(cmd.direction);
                 ret.ep=htonl(cmd.ep);
                 ret.seqnum=htonl(cmd.seqnum);
-                ret.status=htonl(0); 
-             //FIXME
-             /*                
+                ret.status=htonl(0);
+ 
                 if (send (sockfd, (char *)&ret, sizeof(USBIP_RET_UNLINK), 0) != sizeof(USBIP_RET_UNLINK))
                 {
                   printf ("send error : %s \n", strerror (errno));

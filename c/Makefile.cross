@@ -1,5 +1,5 @@
 CC=i686-w64-mingw32-gcc
-CFLAGS= -Wall -O5 -Wno-overflow
+CFLAGS= -Wall -mno-ms-bitfields
 PROGS= hid-mouse hid-keyboard cdc-acm
 
 all:	${PROGS}

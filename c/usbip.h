@@ -59,7 +59,7 @@ typedef struct sockaddr sockaddr;
 #define USB_DESCRIPTOR_ENDPOINT         0x05    // Endpoint Descriptor.
 #define USB_DESCRIPTOR_DEVICE_QUALIFIER 0x06    // Device Qualifier.
 
-typedef struct __attribute__ ((packed)) _USB_DEVICE_DESCRIPTOR
+typedef struct __attribute__ ((__packed__)) _USB_DEVICE_DESCRIPTOR
 {
     byte bLength;               // Length of this descriptor.
     byte bDescriptorType;       // DEVICE descriptor type (USB_DESCRIPTOR_DEVICE).
@@ -78,7 +78,7 @@ typedef struct __attribute__ ((packed)) _USB_DEVICE_DESCRIPTOR
 } USB_DEVICE_DESCRIPTOR;
 
 
-typedef struct __attribute__ ((packed)) _USB_CONFIGURATION_DESCRIPTOR
+typedef struct __attribute__ ((__packed__)) _USB_CONFIGURATION_DESCRIPTOR
 {
     byte bLength;               // Length of this descriptor.
     byte bDescriptorType;       // CONFIGURATION descriptor type (USB_DESCRIPTOR_CONFIGURATION).
@@ -91,7 +91,7 @@ typedef struct __attribute__ ((packed)) _USB_CONFIGURATION_DESCRIPTOR
 } USB_CONFIGURATION_DESCRIPTOR;
 
 
-typedef struct __attribute__ ((packed)) _USB_INTERFACE_DESCRIPTOR
+typedef struct __attribute__ ((__packed__)) _USB_INTERFACE_DESCRIPTOR
 {
     byte bLength;               // Length of this descriptor.
     byte bDescriptorType;       // INTERFACE descriptor type (USB_DESCRIPTOR_INTERFACE).
@@ -105,7 +105,7 @@ typedef struct __attribute__ ((packed)) _USB_INTERFACE_DESCRIPTOR
 } USB_INTERFACE_DESCRIPTOR;
 
 
-typedef struct __attribute__ ((packed)) _USB_ENDPOINT_DESCRIPTOR
+typedef struct __attribute__ ((__packed__)) _USB_ENDPOINT_DESCRIPTOR
 {
     byte bLength;               // Length of this descriptor.
     byte bDescriptorType;       // ENDPOINT descriptor type (USB_DESCRIPTOR_ENDPOINT).
@@ -115,7 +115,7 @@ typedef struct __attribute__ ((packed)) _USB_ENDPOINT_DESCRIPTOR
     byte bInterval;             // Polling interval in frames.
 } USB_ENDPOINT_DESCRIPTOR;
 
-typedef struct __attribute__ ((packed)) _USB_DEVICE_QUALIFIER_DESCRIPTOR
+typedef struct __attribute__ ((__packed__)) _USB_DEVICE_QUALIFIER_DESCRIPTOR
 {
     byte bLength;               // Size of this descriptor
     byte bType;                 // Type, always USB_DESCRIPTOR_DEVICE_QUALIFIER
@@ -129,14 +129,14 @@ typedef struct __attribute__ ((packed)) _USB_DEVICE_QUALIFIER_DESCRIPTOR
 } USB_DEVICE_QUALIFIER_DESCRIPTOR;
 
 //Generic Configuration
-typedef struct __attribute__ ((packed)) _CONFIG_GEN
+typedef struct __attribute__ ((__packed__)) _CONFIG_GEN
 {
  USB_CONFIGURATION_DESCRIPTOR dev_conf;
  USB_INTERFACE_DESCRIPTOR dev_int;
 } CONFIG_GEN;
 
 //HID
-typedef struct __attribute__ ((packed)) _USB_HID_DESCRIPTOR
+typedef struct __attribute__ ((__packed__)) _USB_HID_DESCRIPTOR
 {
     byte bLength;
     byte bDescriptorType;
@@ -148,7 +148,7 @@ typedef struct __attribute__ ((packed)) _USB_HID_DESCRIPTOR
 } USB_HID_DESCRIPTOR;
 
 //Configuration
-typedef struct __attribute__ ((packed)) _CONFIG
+typedef struct __attribute__ ((__packed__)) _CONFIG_HID
 {
  USB_CONFIGURATION_DESCRIPTOR dev_conf;
  USB_INTERFACE_DESCRIPTOR dev_int;
@@ -160,7 +160,7 @@ typedef struct __attribute__ ((packed)) _CONFIG
 /* Functional Descriptor Structure - See CDC Specification 1.1 for details */
 
 /* Header Functional Descriptor */
-typedef struct __attribute__ ((packed)) _USB_CDC_HEADER_FN_DSC
+typedef struct __attribute__ ((__packed__)) _USB_CDC_HEADER_FN_DSC
 {
     byte bFNLength;
     byte bDscType;
@@ -169,7 +169,7 @@ typedef struct __attribute__ ((packed)) _USB_CDC_HEADER_FN_DSC
 } USB_CDC_HEADER_FN_DSC;
 
 /* Abstract Control Management Functional Descriptor */
-typedef struct __attribute__ ((packed)) _USB_CDC_ACM_FN_DSC
+typedef struct __attribute__ ((__packed__)) _USB_CDC_ACM_FN_DSC
 {
     byte bFNLength;
     byte bDscType;
@@ -178,7 +178,7 @@ typedef struct __attribute__ ((packed)) _USB_CDC_ACM_FN_DSC
 } USB_CDC_ACM_FN_DSC;
 
 /* Union Functional Descriptor */
-typedef struct __attribute__ ((packed)) _USB_CDC_UNION_FN_DSC
+typedef struct __attribute__ ((__packed__)) _USB_CDC_UNION_FN_DSC
 {
     byte bFNLength;
     byte bDscType;
@@ -188,7 +188,7 @@ typedef struct __attribute__ ((packed)) _USB_CDC_UNION_FN_DSC
 } USB_CDC_UNION_FN_DSC;
 
 /* Call Management Functional Descriptor */
-typedef struct __attribute__ ((packed)) _USB_CDC_CALL_MGT_FN_DSC
+typedef struct __attribute__ ((__packed__)) _USB_CDC_CALL_MGT_FN_DSC
 {
     byte bFNLength;
     byte bDscType;
@@ -198,7 +198,7 @@ typedef struct __attribute__ ((packed)) _USB_CDC_CALL_MGT_FN_DSC
 } USB_CDC_CALL_MGT_FN_DSC;
 
 //Configuration
-typedef struct __attribute__ ((packed)) _CONFIG_CDC
+typedef struct __attribute__ ((__packed__)) _CONFIG_CDC
 {
  USB_CONFIGURATION_DESCRIPTOR dev_conf0;
  USB_INTERFACE_DESCRIPTOR dev_int0;
@@ -215,7 +215,7 @@ typedef struct __attribute__ ((packed)) _CONFIG_CDC
 //=================================================================================
 //USBIP data struct 
 
-typedef struct  __attribute__ ((packed)) _OP_REQ_DEVLIST
+typedef struct  __attribute__ ((__packed__)) _OP_REQ_DEVLIST
 {
  word version;
  word command;
@@ -223,7 +223,7 @@ typedef struct  __attribute__ ((packed)) _OP_REQ_DEVLIST
 } OP_REQ_DEVLIST;
 
 
-typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST_HEADER
+typedef struct  __attribute__ ((__packed__)) _OP_REP_DEVLIST_HEADER
 {
 word version;
 word command;
@@ -232,7 +232,7 @@ int nExportedDevice;
 }OP_REP_DEVLIST_HEADER;
 
 //================= for each device
-typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST_DEVICE
+typedef struct  __attribute__ ((__packed__)) _OP_REP_DEVLIST_DEVICE
 {
 char usbPath[256];
 char busID[32];
@@ -251,7 +251,7 @@ byte bNumInterfaces;
 }OP_REP_DEVLIST_DEVICE;
 
 //================== for each interface
-typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST_INTERFACE
+typedef struct  __attribute__ ((__packed__)) _OP_REP_DEVLIST_INTERFACE
 {
 byte bInterfaceClass;
 byte bInterfaceSubClass;
@@ -259,14 +259,14 @@ byte bInterfaceProtocol;
 byte padding;
 }OP_REP_DEVLIST_INTERFACE;
 
-typedef struct  __attribute__ ((packed)) _OP_REP_DEVLIST
+typedef struct  __attribute__ ((__packed__)) _OP_REP_DEVLIST
 {
 OP_REP_DEVLIST_HEADER      header;
 OP_REP_DEVLIST_DEVICE      device; //only one!
 OP_REP_DEVLIST_INTERFACE   *interfaces;
 }OP_REP_DEVLIST;
 
-typedef struct  __attribute__ ((packed)) _OP_REQ_IMPORT
+typedef struct  __attribute__ ((__packed__)) _OP_REQ_IMPORT
 {
 word version;
 word command;
@@ -275,7 +275,7 @@ char busID[32];
 }OP_REQ_IMPORT;
 
 
-typedef struct  __attribute__ ((packed)) _OP_REP_IMPORT
+typedef struct  __attribute__ ((__packed__)) _OP_REP_IMPORT
 {
 word version;
 word command;
@@ -299,7 +299,7 @@ byte bNumInterfaces;
 
 
 
-typedef struct  __attribute__ ((packed)) _USBIP_CMD_SUBMIT
+typedef struct  __attribute__ ((__packed__)) _USBIP_CMD_SUBMIT
 {
 int command;
 int seqnum;
@@ -327,7 +327,7 @@ long long setup;
 +  URB_DIR_MASK            | 0x00000200 | yes     | yes       | yes      | yes
 */
 
-typedef struct  __attribute__ ((packed)) _USBIP_RET_SUBMIT
+typedef struct  __attribute__ ((__packed__)) _USBIP_RET_SUBMIT
 {
 int command;
 int seqnum;
@@ -343,7 +343,7 @@ long long setup;
 }USBIP_RET_SUBMIT;
 
 
-typedef struct  __attribute__ ((packed)) _USBIP_CMD_UNLINK
+typedef struct  __attribute__ ((__packed__)) _USBIP_CMD_UNLINK
 {
 int command;
 int seqnum;
@@ -354,7 +354,7 @@ int seqnum_urb;
 }USBIP_CMD_UNLINK;
 
 
-typedef struct  __attribute__ ((packed)) _USBIP_RET_UNLINK
+typedef struct  __attribute__ ((__packed__)) _USBIP_RET_UNLINK
 {
 int command;
 int seqnum;
@@ -366,7 +366,7 @@ int status;
 
 
 
-typedef struct  __attribute__ ((packed)) _StandardDeviceRequest
+typedef struct  __attribute__ ((__packed__)) _StandardDeviceRequest
 {
   byte bmRequestType;
   byte bRequest;

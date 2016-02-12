@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= -Wall -O2 -DLINUX -Wno-overflow
+CFLAGS= -Wall -DLINUX 
 PROGS= hid-mouse hid-keyboard cdc-acm
 
 all:	${PROGS}
