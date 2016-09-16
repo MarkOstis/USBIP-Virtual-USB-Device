@@ -289,12 +289,18 @@ void handle_usb_control(int sockfd, USBIP_RET_SUBMIT *usb_req)
 }
 
            
-void handle_usb_request(int sockfd, USBIP_RET_SUBMIT *ret)
+void handle_usb_request(int sockfd, USBIP_RET_SUBMIT *ret, int bl)
 {
    if(ret->ep == 0)
+   {
+      printf("#control requests\n");
       handle_usb_control(sockfd, ret);
+   }
    else
-      handle_data(sockfd, ret);
+   {
+      printf("#data requests\n");
+      handle_data(sockfd, ret, bl);
+   }
 };
 
 void
@@ -326,6 +332,11 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
       printf ("socket error : %s \n", strerror (errno));
       exit (1);
     };
+
+  int reuse = 1;
+  if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0)
+      perror("setsockopt(SO_REUSEADDR) failed");
+
   memset (&serv, 0, sizeof (serv));
   serv.sin_family = AF_INET;
   serv.sin_addr.s_addr = htonl (INADDR_ANY);
@@ -421,7 +432,7 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
           }
           else
           {
-             printf("----------------\n"); 
+             printf("------------------------------------------------\n"); 
              printf("handles requests\n");
              USBIP_CMD_SUBMIT cmd;
              USBIP_RET_SUBMIT usb_req;
@@ -461,14 +472,14 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
              usb_req.setup=cmd.setup;
              
              if(cmd.command == 1)
-               handle_usb_request(sockfd, &usb_req);
+               handle_usb_request(sockfd, &usb_req, cmd.transfer_buffer_length);
              
 
              if(cmd.command == 2) //unlink urb
              {
                 printf("####################### Unlink URB %u  (not working!!!)\n",cmd.transfer_flags);
              //FIXME
-             /*                
+               /*              
                 USBIP_RET_UNLINK ret;  
                 printf("####################### Unlink URB %u\n",cmd.transfer_flags);
                 ret.command=htonl(0x04);
@@ -476,15 +487,26 @@ usbip_run (const USB_DEVICE_DESCRIPTOR *dev_dsc)                                
                 ret.direction=htonl(cmd.direction);
                 ret.ep=htonl(cmd.ep);
                 ret.seqnum=htonl(cmd.seqnum);
-                ret.status=htonl(0);
+                ret.status=htonl(1);
  
                 if (send (sockfd, (char *)&ret, sizeof(USBIP_RET_UNLINK), 0) != sizeof(USBIP_RET_UNLINK))
                 {
                   printf ("send error : %s \n", strerror (errno));
                   exit(-1);
                 };
-             */
-             } 
+               */ 
+             }
+
+             if(cmd.command > 2)
+             {
+                printf("Unknown USBIP cmd!\n");  
+                close (sockfd);
+#ifndef LINUX
+                WSACleanup ();
+#endif
+                return;  
+             };
+ 
           } 
        }
        close (sockfd);

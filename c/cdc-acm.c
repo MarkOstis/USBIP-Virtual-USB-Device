@@ -200,32 +200,53 @@ const USB_INTERFACE_DESCRIPTOR *interfaces[]={ &configuration_cdc.dev_int0, &con
 const unsigned char *strings[]={string_0, string_1, string_2, string_3};
 
 
-#define BSIZE 1 
+#define BSIZE 64 
 char buffer[BSIZE+1];
 int  bsize=0;
 
 
-void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req)
+void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req, int bl)
 {   
     
   if(usb_req->ep == 0x01)
   {  
-    send_usb_req(sockfd, usb_req, "", 0, 0);
     printf("EP1 received \n"); 
-    //usleep(50000);
+    
+    if(usb_req->direction == 0) //input
+    { 
+      printf("direction=input\n");  
+      bsize=recv (sockfd, (char *) buffer , bl, 0);
+      send_usb_req(sockfd, usb_req,"", 0, 0);
+      buffer[bsize+1]=0; //string terminator
+      printf("received (%s)\n",buffer);
+    }
+    else
+    {    
+        printf("direction=output\n");  
+    }
+    //not supported
+    send_usb_req(sockfd, usb_req, "", 0, 0);
+    usleep(500);
   }
   
   if((usb_req->ep == 0x02))
   {
+    printf("EP2 received \n"); 
     if(usb_req->direction == 0) //input
     { 
-      bsize=recv (sockfd, (char *) buffer , BSIZE, 0);
+      int i;
+      printf("direction=input\n");  
+      bsize=recv (sockfd, (char *) buffer , bl, 0);
       send_usb_req(sockfd, usb_req,"", 0, 0);
       buffer[bsize+1]=0; //string terminator
-      printf("received (%s)\n",buffer);    
+      printf("received (%s)\n",buffer);
+      for(i=0;i<bsize;i++)
+          printf("%02X",(unsigned char)buffer[i]);
+      printf("\n");       
     }
     else //output
     {
+      printf("direction=output\n");  
       if(bsize != 0)
       {   
         int i;
@@ -237,9 +258,11 @@ void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req)
         bsize=0;
       }
       else
+      {
         send_usb_req(sockfd, usb_req,"", 0, 0);    
-        printf("no data \n");
-      //usleep(50000);
+        usleep(500);
+        printf("no data disponible\n");
+      }
     }
   }
   

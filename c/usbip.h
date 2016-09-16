@@ -388,5 +388,5 @@ extern const char * configuration;
 extern const USB_INTERFACE_DESCRIPTOR *interfaces[];
 extern const unsigned char *strings[];
 
-void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req);
+void handle_data(int sockfd, USBIP_RET_SUBMIT *usb_req, int bl);
 void handle_unknown_control(int sockfd, StandardDeviceRequest * control_req, USBIP_RET_SUBMIT *usb_req);
