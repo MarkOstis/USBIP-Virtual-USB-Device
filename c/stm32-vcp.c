@@ -66,7 +66,7 @@ const CONFIG_CDC  configuration_cdc={{
     /* Configuration Descriptor */
     0x09,//sizeof(USB_CFG_DSC),    // Size of this descriptor in bytes
     USB_DESCRIPTOR_CONFIGURATION,                // CONFIGURATION descriptor type
-    0x0043,                 // Total length of data for this cfg
+    sizeof(CONFIG_CDC),           // Total length of data for this cfg
     2,                      // Number of interfaces in this cfg
     1,                      // Index value of this configuration
     0,                      // Configuration string index
@@ -89,7 +89,7 @@ const CONFIG_CDC  configuration_cdc={{
     0x05,                   // bFNLength
     0x24,                   // bDscType
     0x00,                   // bDscSubType
-    0x0110                  // bcdCDC
+    0x1001                  // bcdCDC
     },{
     /* Call Management Functional Descriptor */
     0x05,                   // bFNLength
@@ -151,8 +151,8 @@ const CONFIG_CDC  configuration_cdc={{
 const unsigned char string_0[] = { // available languages  descriptor
 		0x04,
     USB_DESCRIPTOR_STRING,
-		0x09,
-    0x04
+		0x09, 0x00,
+    0x04, 0x00
 		};
 
 // Manufacturer string
